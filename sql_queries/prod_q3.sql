@@ -3,20 +3,37 @@ Returns all of the products no matter category and divided into price brackets.
 */
 
 WITH categories AS (
-  SELECT mp.listprice, NTILE(6) OVER (ORDER BY mp.listprice) AS category
-  FROM production.product as mp
+  SELECT 
+    mp.listprice, 
+    NTILE(4) OVER (ORDER BY mp.listprice) AS category
+  FROM 
+    production.product AS mp
+  WHERE 
+    mp.listprice > 0
+),
+aggregated_categories AS (
+  SELECT 
+    category,
+    MIN(listprice) AS min_price,
+    MAX(listprice) AS max_price,
+    COUNT(*) AS total_products
+  FROM 
+    categories
+  GROUP BY 
+    category
 )
-SELECT CASE
-  WHEN category = 3 then '$2 to $50'
-  WHEN category = 4 then '$50 to $330'
-  WHEN category = 5 then '$330 to $1K'
-  WHEN category = 6 then '$1K to $3.5K'
-  END AS Price_Brackets
-  , MAX(mp.listprice) - MIN(mp.listprice) AS "Min price to Max Price"
-  , count(*) AS "Total # of Products"
-FROM categories
-JOIN production.product as mp
-USING(listprice)
-WHERE mp.listprice > 0
-GROUP BY category
-ORDER BY category
+SELECT 
+    CASE
+    WHEN category = 1 THEN CONCAT('$', MIN(min_price)::text, ' to $', MAX(max_price)::text)
+    WHEN category = 2 THEN CONCAT('$', MIN(min_price)::text, ' to $', MAX(max_price)::text)
+    WHEN category = 3 THEN CONCAT('$', MIN(min_price)::text, ' to $', MAX(max_price)::text)
+    WHEN category = 4 THEN CONCAT('$', MIN(min_price)::text, ' to $', MAX(max_price)::text)
+  END AS price_bracket,
+  min_price,
+  max_price,
+  max_price - min_price AS range,
+  total_products
+FROM 
+  aggregated_categories
+GROUP BY category, min_price, max_price, max_price - min_price, total_products
+ORDER BY category;
