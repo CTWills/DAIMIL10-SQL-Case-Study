@@ -36,6 +36,19 @@ def create_report(con, sql_file, xlsx_out, xlsx_name=None):
 
 
 def create_connection(db, usr, pw, host, port):
+    """
+    Creates a connection to a postgresql database
+
+    Parameters:
+        db (str): postgresql database to connect to
+        usr (str): user that you will be connect to database as
+        pw (str): password for usr
+        host (str): location where server is hosted Ex: localhost
+        port (str): port where database is located on host
+
+    Returns:
+        PostgresQl connection - 'psycopg2.extensions.connection'
+    """
     con = pg2.connect(
         dbname=db,
         user=usr,

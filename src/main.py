@@ -2,9 +2,8 @@
 Generates reports
 """
 import os
-from dotenv import load_dotenv
-import psycopg2 as pg2
 import argparse
+from dotenv import load_dotenv
 from helper_functions import create_report, create_connection
 
 
