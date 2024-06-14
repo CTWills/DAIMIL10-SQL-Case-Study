@@ -11,9 +11,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-sp", "--sql_path",
                         help="Path to folder containing sql queries")
+    parser.add_argument("-o", "--xlxs_path",
+                        help="Path to folder to store excel files")
     args = parser.parse_args()
 
     sql_dir = args.sql_path
+    out_dir = args.xlxs_path
 
     load_dotenv()
     PG_USER = os.getenv("PG_USER")
@@ -27,6 +30,6 @@ if __name__ == "__main__":
     for ix, file in enumerate(os.listdir(sql_dir)):
         create_report(con=con,
                       sql_file=f"{sql_dir}/{file}",
-                      xlsx_out="excel_reports")
+                      xlsx_out=out_dir)
 
     con.close()
