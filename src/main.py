@@ -1,31 +1,33 @@
 """
 Generates reports
 """
-from os import getenv
+import os
 from dotenv import load_dotenv
 import psycopg2 as pg2
-from helper_functions import create_report
+import argparse
+from helper_functions import create_report, create_connection
 
 
 if __name__ == "__main__":
-    load_dotenv()
-    PG_USER = getenv("PG_USER")
-    PG_PASSWORD = getenv("PG_PASSWORD")
-    PG_HOST = getenv("PG_HOST")
-    PG_PORT = getenv("PG_PORT")
-    PG_DB = getenv("PG_DB")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-sp", "--sql_path",
+                        help="Path to folder containing sql queries")
+    args = parser.parse_args()
 
-    con = pg2.connect(
-        dbname=PG_DB,
-        user=PG_USER,
-        password=PG_PASSWORD,
-        host=PG_HOST,
-        port=PG_PORT
-    )
-    print(type(con))
-    create_report(con=con,
-                  sql_file="sql_queries/prod_q3.sql",
-                  xlsx_out="excel_reports",
-                  xlsx_name="prod_report_3")
+    sql_dir = args.sql_path
+
+    load_dotenv()
+    PG_USER = os.getenv("PG_USER")
+    PG_PASSWORD = os.getenv("PG_PASSWORD")
+    PG_HOST = os.getenv("PG_HOST")
+    PG_PORT = os.getenv("PG_PORT")
+    PG_DB = os.getenv("PG_DB")
+
+    con = create_connection(PG_DB, PG_USER, PG_PASSWORD, PG_HOST, PG_PORT)
+
+    for ix, file in enumerate(os.listdir(sql_dir)):
+        create_report(con=con,
+                      sql_file=f"{sql_dir}/{file}",
+                      xlsx_out="excel_reports")
 
     con.close()
