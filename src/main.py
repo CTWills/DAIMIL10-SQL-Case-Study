@@ -24,8 +24,8 @@ if __name__ == "__main__":
     )
     print(type(con))
     create_report(con=con,
-                  sql_file="sql_queries/prod_q2.sql",
+                  sql_file="sql_queries/prod_q3.sql",
                   xlsx_out="excel_reports",
-                  xlsx_name="prod_report_2")
+                  xlsx_name="prod_report_3")
 
     con.close()
